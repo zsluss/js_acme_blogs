@@ -203,8 +203,25 @@ const getUserPosts = async (userId) => {
         console.error(err);
     }
 }
-
 //Number 12
+//c. Should be an async function
+//a. Receives a post id as a parameter
+const getUser = async (userId) => {
+    //d. Should utilize a try / catch block    
+    try {
+        //b. Fetches post data for a specific user id from: https://jsonplaceholder.typicode.com/ (look at Routes section)
+        //e. Uses the fetch API to request all posts for a specific user id
+        const res = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
+        if (!res.ok) throw new Error('Status code not in 200=299 range');
+        //f.Await the users data response
+        //g. Return the JSON data
+        return await res.json();
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+//Number 13
 //c. Should be an async function
 //a. Receives a post id as a parameter
 const getPostComments = async (postId) => {
@@ -225,12 +242,83 @@ const getPostComments = async (postId) => {
 //Therefore, these functions will also need to be async. When they call the API functions, they will
 //need to await data from those functions.
 
-//Number 13
+//Number 14
+//a. Dependencies: getPostComments, createComments  -- these are created above
+// b. Is an async function
+//c. Receives a postId as a parameter
+const displayComments = async (postId) => {
+    //d. Creates a section element with document.createElement()
+    const section = document.createElement('section');
+    //e. Sets an attribute on the section element with section.dataset.postId
+    section.dataset.postId = postId;
+    //f.Adds the classes 'comments' and 'hide' to the section element
+    section.classList.add('comments', 'hide');
+    //g. Creates a variable comments equal to the result of await getPostComments(postId);
+    const comments = await getPostComments(postId);
+    //h. Creates a variable named fragment equal to createComments(comments)
+    const fragment = createComments(comments);
+    //i. Append the fragment to the section
+    section.append(fragment);
+    //j. Return the section element
+    return section;
+}
 
+//Number 15
+//a. Dependencies: createElemWithText, getUser, displayComments -- these are above
+//b. Is an async function
+//c. Receives posts JSON data as a parameter
+const createPosts = async (posts) => {
+    //d. Create a fragment element with document.createDocumentFragment()
+    const fragment = document.createDocumentFragment();
+    //e. Loops through the posts data
+    for (const post of posts) {
+        //f.For each post do the following:
+        //g. Create an article element with document.createElement()
+        const article = document.createElement('article');
+        //h. Create an h2 element with the post title
+        const h2 = createElemWithText('h2', post.title);
+        //i. Create an p element with the post body
+        const p1 = createElemWithText('p', post.body);
+        //j. Create another p element with text of `Post ID: ${post.id}`
+        const p2 = createElemWithText('p', `Post ID: ${post.id}`);
+        //k. Define an author variable equal to the result of await getUser(post.userId)
+        const author = await getUser(post.userId);
+        //l. Create another p element with text of `Author: ${author.name} with ${author.company.name}`
+        const p3 = createElemWithText('p', `Author: ${author.name} with ${author.company.name}`);
+        //m. Create another p element with the author’s company catch phrase.
+        const p4 = createElemWithText('p', author.company.catchPhrase);
+        //n. Create a button with the text 'Show Comments'
+        const button = createElemWithText('button', 'Show Comments');
+        //o. Set an attribute on the button with button.dataset.postId = post.id
+        button.dataset.postId = post.id;
+        //p. Append the h2, paragraphs, button, and section elements you have created tothe article element.
+        article.append(h2, p1, p2, p3, p4, button);
+        //q. Create a variable named section equal to the result of await displayComments(post.id);
+        const section = await displayComments(post.id);
+        //r. Append the section element to the article element
+        article.append(section);
+        //s. After the loop completes, append the article element to the fragment
+        fragment.append(article);
+    }
+    //t. Return the fragment element
+    return fragment;
+}
 
+//Number 16
+ //a. Dependencies: createPosts, createElemWithText  -- Defined above
+  //b. Is an async function
+ //c. Receives posts data as a parameter
+const displayPosts = async (posts) => {
+ //d. Selects the main element
+    const main = document.querySelector('main');
+ //e. Defines a variable named element that is equal to:
+  //i. IF posts exist: the element returned from await createPosts(posts)
+ //ii. IF post data does not exist: create a paragraph element that is identical tothe default paragraph found in the html file.
+ //iii. Optional suggestion: use a ternary for this conditional
+    const element = posts ? await createPosts(posts) : createElemWithText('p', 'Select an author to see their posts.');
 
-
-
-
-
-
+ //f. Appends the element to the main element
+    main.append(element);
+    // g. Returns the element variable
+    return element;
+}
