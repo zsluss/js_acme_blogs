@@ -33,21 +33,28 @@ createSelectOptions = (users) => {
 // Number 3
 toggleCommentSection = (postId) => {
     //Selects the section element with the data-post-id attribute equal to the postId received as a parameter
+    if (!postId) return undefined;
     const section = document.querySelector(`[data-post-id="${postId}"]`);
     //Use code to verify the section exists before attempting to access the classList property
     if (section) {
         //Toggles the class 'hide' on the section element
         section.classList.toggle('hide');
+        //Return the section element
+        return section;
     }
-    //Return the section element
-    return section;
+    //if it doesnt exist need to return undefined
+    else {
+        return null;
+    }
 }
 
 //Number 4
 toggleCommentButton = (postId) => {
+    if (!postId) return undefined;
     //Selects the button with the data-post-id attribute equal to the postId received as a
     //parameter
-    const button = document.querySelector(`[data-post-id="${postId}"]`);
+    const button = document.querySelector(`button[data-post-id="${postId}"]`);  // didnt add button here and caused issues
+    if (!button) return null;
     //If the button textContent is 'Show Comments' switch textContent to 'Hide Comments'
     if (button) {
         if (button.textContent === 'Show Comments') {
@@ -64,8 +71,12 @@ toggleCommentButton = (postId) => {
 //Number 5
 //Receives a parentElement as a parameter
 deleteChildElements = (parentElement) => {
+    if (!parentElement) { return undefined; }
+    //struggled with this one
+    if (parentElement instanceof HTMLElement === false) { return undefined; }
     //define a child variable as parentElement.lastElementChild
     let child = parentElement.lastElementChild;
+
     //While the child exists…(use a while loop)
     while (child) {
         //Use parentElement.removeChild to remove the child in the loop
@@ -81,6 +92,7 @@ deleteChildElements = (parentElement) => {
 addButtonListeners = () => {
     //Selects all buttons nested inside the main element -- another one that tripped me up for a bit
     const buttons = document.querySelectorAll('main button');
+    //return an empty nodelist if no buttons are found
     //If buttons exist
     if (buttons) {
         //Loop through the NodeList of buttons
@@ -94,14 +106,16 @@ addButtonListeners = () => {
                     //Inside the anonymous function: the function toggleComments is called with the event and postId as parameters
                     toggleComments(e, postId);
                 });
-                //Return the button elements which were selected
-                return button;
             }
         });
+
     }
-    //You may want to define an empty toggleComments function for now. The listener test will NOT pass for addButtonListeners until toggleComments is completed.
-    // Nevertheless, I recommend waiting on the logic inside the toggleComments function until we get there.
+    //Return the button elements which were selected -- i had this inside the loop at first which was causing it to only return one button, and then i had to move it again because it was in the if which didnt catch for an empty
+    return buttons;  //i ddeleted the s off this and struggled for a bit before realizing it needed to be buttons
 }
+//You may want to define an empty toggleComments function for now. The listener test will NOT pass for addButtonListeners until toggleComments is completed.
+// Nevertheless, I recommend waiting on the logic inside the toggleComments function until we get there.
+
 
 //Number 7
 removeButtonListeners = () => {
@@ -111,7 +125,7 @@ removeButtonListeners = () => {
     if (buttons) {
         buttons.forEach(button => {
             // Gets the postId from button.dataset.id
-            const postId = button.dataset.id;
+            const postId = button.dataset.postId;
             // If a postId exists, remove the click event listener from the button (reference removeEventListener) - inside the loop so this happens to each button
             if (postId) {
                 button.removeEventListener('click', function (e) {
@@ -120,16 +134,18 @@ removeButtonListeners = () => {
                     toggleComments(e, postId);
                 });
             }
-            // Return the button elements which were selected
-            return button;
+
         });
     }
+    // Return the button elements which were selected -- same issues as number 6 , was able to quickly fix this time!
+    return buttons;
 }
 
 //Number 8
 //a. Depends on the createElemWithText function we created
 //b. Receives JSON comments data as a parameter
 createComments = (comments) => {
+    if (!comments) return undefined; //missed a lot of these on first go around
     //c. Creates a fragment element with document.createDocumentFragment()
     const fragment = document.createDocumentFragment();
     //d. Loop through the comments
@@ -157,6 +173,7 @@ createComments = (comments) => {
 //a. Depends on the createSelectOptions function we created
 //b. Receives the users JSON data as a parameter
 populateSelectMenu = (users) => {
+    if (!users) return undefined;
     //c. Selects the #selectMenu element by id
     const selectMenu = document.getElementById('selectMenu');
     //d. Passes the users JSON data to createSelectOptions()
@@ -190,6 +207,7 @@ const getUsers = async () => {
 //c. Should be an async function
 //a. Receives a user id as a parameter
 const getUserPosts = async (userId) => {
+    if (!userId) return undefined;
     //d. Should utilize a try / catch block    
     try {
         //b. Fetches post data for a specific user id from: https://jsonplaceholder.typicode.com/ (look at Routes section)
@@ -207,6 +225,7 @@ const getUserPosts = async (userId) => {
 //c. Should be an async function
 //a. Receives a post id as a parameter
 const getUser = async (userId) => {
+    if (!userId) return undefined;
     //d. Should utilize a try / catch block    
     try {
         //b. Fetches post data for a specific user id from: https://jsonplaceholder.typicode.com/ (look at Routes section)
@@ -225,6 +244,7 @@ const getUser = async (userId) => {
 //c. Should be an async function
 //a. Receives a post id as a parameter
 const getPostComments = async (postId) => {
+    if (!postId) return undefined;
     //d. Should utilize a try / catch block
     try {
         // b. Fetches comments for a specific post id from: https://jsonplaceholder.typicode.com/ (look at Routes section)
@@ -236,6 +256,7 @@ const getPostComments = async (postId) => {
         return await res.json();
     } catch (err) {
         console.error(err);
+        return [];
     }
 }
 //The next functions will depend on the async API data functions we just created.
@@ -247,6 +268,7 @@ const getPostComments = async (postId) => {
 // b. Is an async function
 //c. Receives a postId as a parameter
 const displayComments = async (postId) => {
+    if (!postId) return undefined;
     //d. Creates a section element with document.createElement()
     const section = document.createElement('section');
     //e. Sets an attribute on the section element with section.dataset.postId
@@ -268,6 +290,7 @@ const displayComments = async (postId) => {
 //b. Is an async function
 //c. Receives posts JSON data as a parameter
 const createPosts = async (posts) => {
+    if (!posts) return undefined;
     //d. Create a fragment element with document.createDocumentFragment()
     const fragment = document.createDocumentFragment();
     //e. Loops through the posts data
@@ -305,39 +328,121 @@ const createPosts = async (posts) => {
 }
 
 //Number 16
- //a. Dependencies: createPosts, createElemWithText  -- Defined above
-  //b. Is an async function
- //c. Receives posts data as a parameter
+//a. Dependencies: createPosts, createElemWithText  -- Defined above
+//b. Is an async function
+//c. Receives posts data as a parameter
 const displayPosts = async (posts) => {
- //d. Selects the main element
+    if (!posts) return createElemWithText('p', 'Select an Employee to display their posts.', 'default-text');
+    //d. Selects the main element
     const main = document.querySelector('main');
- //e. Defines a variable named element that is equal to:
-  //i. IF posts exist: the element returned from await createPosts(posts)
- //ii. IF post data does not exist: create a paragraph element that is identical tothe default paragraph found in the html file.
- //iii. Optional suggestion: use a ternary for this conditional
-    const element = posts ? await createPosts(posts) : createElemWithText('p', 'Select an Employee to display their posts.');
- //f. Appends the element to the main element
+    //e. Defines a variable named element that is equal to:
+    //i. IF posts exist: the element returned from await createPosts(posts)
+    //ii. IF post data does not exist: create a paragraph element that is identical tothe default paragraph found in the html file.
+    //iii. Optional suggestion: use a ternary for this conditional - spent a lot of time on this one, it looks like i had it right but the order was wrong
+    const element = posts ? await createPosts(posts) : createElemWithText('p', 'Select an Employee to display their posts.', 'default-text');
+    //f. Appends the element to the main element
     main.append(element);
     // g. Returns the element variable
     return element;
 }
 
 //Number 17
- //a. Dependencies: toggleCommentSection, toggleCommentButton
- //b. Receives 2 parameters: (see addButtonListeners function description)
- //i.The event from the click event listener is the 1st param
- //ii. Receives a postId as the 2nd parameter
+//a. Dependencies: toggleCommentSection, toggleCommentButton
+//b. Receives 2 parameters: (see addButtonListeners function description)
+//i.The event from the click event listener is the 1st param
+//ii. Receives a postId as the 2nd parameter
 
-toggleComments= (event, postId) => 
-    {
-         //c. Sets event.target.listener = true (I need this for testing to be accurate)
-        event.target.listener = true;
- //d. Passes the postId parameter to toggleCommentSection()
- //e. toggleCommentSection result is a section element
+toggleComments = (event, postId) => {
+    if (!event || !postId) return undefined;
+    //c. Sets event.target.listener = true (I need this for testing to be accurate)
+    event.target.listener = true;
+    //d. Passes the postId parameter to toggleCommentSection()
+    //e. toggleCommentSection result is a section element
     const section = toggleCommentSection(postId);
-  //f. Passes the postId parameter to toggleCommentButton()
-  //g. toggleCommentButton result is a button
+    //f. Passes the postId parameter to toggleCommentButton()
+    //g. toggleCommentButton result is a button
     const button = toggleCommentButton(postId);
- //h. Return an array containing the section element returned from toggleCommentSection and the button element returned from toggleCommentButton: [section, button]
+    //h. Return an array containing the section element returned from toggleCommentSection and the button element returned from toggleCommentButton: [section, button]
     return [section, button];
 }
+
+//Number 18
+//a. Dependencies: removeButtonListeners, deleteChildElements, displayPosts, addButtonListeners
+// b. Is an async function
+//c. Receives posts JSON data as a parameter --forgot this on frist time through
+refreshPosts = async (posts) => {
+    if (!posts) return undefined;
+    //d. Call removeButtonListeners
+    //e. Result of removeButtonListeners is the buttons returned from this function
+    const removeButtons = removeButtonListeners();
+    //f. Call deleteChildElements with the main element passed in as the parameter
+    //g. Result of deleteChildElements is the return of the main element
+    const main = document.querySelector('main');
+    deleteChildElements(main);
+    //h. Passes posts JSON data to displayPosts and awaits completion
+    //i. Result of displayPosts is a document fragment
+    const fragment = await displayPosts(posts);
+    //j. Call addButtonListeners
+    //k. Result of addButtonListeners is the buttons returned from this function
+    const addButtons = addButtonListeners();
+    //l. Return an array of the results from the functions called: [removeButtons, main, fragment, addButtons]
+    return [removeButtons, main, fragment, addButtons];
+}
+
+//Number 19
+//a. Dependencies: getUserPosts, refreshPosts
+//b. Should be an async function
+// c. Automatically receives the event as a parameter (see cheatsheet)
+selectMenuChangeEventHandler = async (event) => {
+    if (!event) return undefined;
+    //d. Disables the select menu when called into action (disabled property)
+    if (event.target) event.target.disabled = true;
+    //e. Defines userId = event.target.value || 1; (see cheatsheet)
+    const userId = Number(event.target?.value) || 1;
+    //f. Passes the userId parameter to await getUserPosts
+    //g. Result is the posts JSON data
+    const posts = await getUserPosts(userId);
+    //h. Passes the posts JSON data to await refreshPosts
+    //i.  Result is the refreshPostsArray
+    const refreshPostsArray = await refreshPosts(posts);
+    //j. Enables the select menu after results are received (disabled property)
+    if (event.target) event.target.disabled = false;
+    //k. Return an array with the userId, posts and the array returned from refreshPosts:  [userId, posts, refreshPostsArray]
+    return [userId, posts, refreshPostsArray];
+}
+
+//Number 20
+//  a. Dependencies: getUsers, populateSelectMenu
+//b. Should be an async function
+//c. Noparameters.
+initPage = async () => {
+    //d. Call await getUsers
+    //e. Result is the users JSON data
+    const users = await getUsers();
+    //f. Passes the users JSON data to the populateSelectMenu function
+    //g. Result is the select element returned from populateSelectMenu
+    const select = populateSelectMenu(users);
+    //h. Return an array with users JSON data from getUsers and the select element result from populateSelectMenu: [users, select]
+    return [users, select];
+}
+
+//Number 21
+// a. Dependencies: initPage, selectMenuChangeEventHandler
+initApp = () => {
+
+    //b call the initPage() function.
+    initPage();
+    //c. Select the #selectMenu element by id
+    const selectMenu = document.getElementById('selectMenu');
+    // d. Add an event listener to the #selectMenu for the “change” event
+    // e. The event listener should call selectMenuChangeEventHandler when the change event fires for the #selectMenu
+    selectMenu.addEventListener('change', selectMenuChangeEventHandler);
+    //f. NOTE: All of the above needs to be correct for your app to function correctly.  However, I can only test if the initApp function exists. It does not return anything.
+}
+
+//This must be underneath the definition of initApp in your file.
+//1. Add an event listener to the document.
+//2. Listen for the “DOMContentLoaded” event.
+//3. Put initApp in the listener as the event handler function.
+//4. This will call initApp after the DOM content has loaded and your app will be started.
+document.addEventListener('DOMContentLoaded', initApp);
