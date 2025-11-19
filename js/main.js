@@ -315,10 +315,11 @@ const displayPosts = async (posts) => {
   //i. IF posts exist: the element returned from await createPosts(posts)
  //ii. IF post data does not exist: create a paragraph element that is identical tothe default paragraph found in the html file.
  //iii. Optional suggestion: use a ternary for this conditional
-    const element = posts ? await createPosts(posts) : createElemWithText('p', 'Select an author to see their posts.');
-
+    const element = posts ? await createPosts(posts) : createElemWithText('p', 'Select an Employee to display their posts.');
  //f. Appends the element to the main element
     main.append(element);
     // g. Returns the element variable
     return element;
 }
+
+//Number 17
