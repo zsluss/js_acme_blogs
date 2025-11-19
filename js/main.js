@@ -323,3 +323,21 @@ const displayPosts = async (posts) => {
 }
 
 //Number 17
+ //a. Dependencies: toggleCommentSection, toggleCommentButton
+ //b. Receives 2 parameters: (see addButtonListeners function description)
+ //i.The event from the click event listener is the 1st param
+ //ii. Receives a postId as the 2nd parameter
+
+toggleComments= (event, postId) => 
+    {
+         //c. Sets event.target.listener = true (I need this for testing to be accurate)
+        event.target.listener = true;
+ //d. Passes the postId parameter to toggleCommentSection()
+ //e. toggleCommentSection result is a section element
+    const section = toggleCommentSection(postId);
+  //f. Passes the postId parameter to toggleCommentButton()
+  //g. toggleCommentButton result is a button
+    const button = toggleCommentButton(postId);
+ //h. Return an array containing the section element returned from toggleCommentSection and the button element returned from toggleCommentButton: [section, button]
+    return [section, button];
+}
