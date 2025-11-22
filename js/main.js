@@ -378,7 +378,7 @@ refreshPosts = async (posts) => {
     //f. Call deleteChildElements with the main element passed in as the parameter
     //g. Result of deleteChildElements is the return of the main element
     const main = document.querySelector('main');
-    deleteChildElements(main);
+    const deletedMain = deleteChildElements(main);
     //h. Passes posts JSON data to displayPosts and awaits completion
     //i. Result of displayPosts is a document fragment
     const fragment = await displayPosts(posts);
@@ -386,7 +386,7 @@ refreshPosts = async (posts) => {
     //k. Result of addButtonListeners is the buttons returned from this function
     const addButtons = addButtonListeners();
     //l. Return an array of the results from the functions called: [removeButtons, main, fragment, addButtons]
-    return [removeButtons, main, fragment, addButtons];
+    return [removeButtons, deletedMain, fragment, addButtons];
 }
 
 //Number 19
@@ -396,9 +396,9 @@ refreshPosts = async (posts) => {
 selectMenuChangeEventHandler = async (event) => {
     if (!event) return undefined;
     //d. Disables the select menu when called into action (disabled property)
-    if (event.target) event.target.disabled = true;
+    selectMenu.disabled = true;
     //e. Defines userId = event.target.value || 1; (see cheatsheet)
-    const userId = Number(event.target?.value) || 1;
+    const userId = +event?.target?.value || 1;
     //f. Passes the userId parameter to await getUserPosts
     //g. Result is the posts JSON data
     const posts = await getUserPosts(userId);
@@ -406,7 +406,7 @@ selectMenuChangeEventHandler = async (event) => {
     //i.  Result is the refreshPostsArray
     const refreshPostsArray = await refreshPosts(posts);
     //j. Enables the select menu after results are received (disabled property)
-    if (event.target) event.target.disabled = false;
+        selectMenu.disabled = false;
     //k. Return an array with the userId, posts and the array returned from refreshPosts:  [userId, posts, refreshPostsArray]
     return [userId, posts, refreshPostsArray];
 }
@@ -425,6 +425,7 @@ initPage = async () => {
     //h. Return an array with users JSON data from getUsers and the select element result from populateSelectMenu: [users, select]
     return [users, select];
 }
+
 
 //Number 21
 // a. Dependencies: initPage, selectMenuChangeEventHandler
